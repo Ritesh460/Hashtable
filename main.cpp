@@ -1,10 +1,10 @@
-#include <iostream>
+#include <iostream> //my code is using Linked Lists p2 from last project
 #include <iomanip>
 #include <cstring>
 #include <random>
+#include "node.h"
 #include "student.h"
 using namespace std;
-
 const int OGsize = 100;
 
 Node** table;
@@ -14,13 +14,13 @@ int nextID = 100000;
 //function prototypes(modify later to remove)
 int hashFunction(int ID);
 void addStudent(Student* s);
-void addNode(Node*& head, Student* s, int& count);
+void addNode(Node* &head, Student* s, int &count);
 void printAll();
 void printChain(Node* head);
 void deleteStudent(int ID);
-bool deleteNode(Node*& head, int ID);
+bool deleteNode(Node* &head, int ID);
 void averageGPA();
-float averageHelper(Node* head, int& count);
+float averageHelper(Node* head, int &count);
 void rehash();
 Student* randomStudent();
 
@@ -34,18 +34,30 @@ int main () {
   bool running = true;
   while (running) {
     if (strcmp(command,"ADD")) {
-     //addStudent and addNode functions called
+      char first[50], last[50];
+      int ID;
+      float GPA;
+      cin >> first >> last >> ID >> GPA;
+      Student* s = new Student(first, last, ID, GPA);
+      addStudent(s);
     }
-    else if (strcmp(command,"PRINT") {
-     //printALL and printChain functions called		    
+    else if (strcmp(command,"RANDOM") == 0) {
+      int n;
+      cin >> n;
+      for (int i = 0; i < n; i++) {
+        addStudent(randomStudent());
+      }
     }
-    else if (strcmp(command,"DELETE") {
+    else if (strcmp(command,"PRINT") == 0) {
+      printAll();		    
+    }
+    else if (strcmp(command,"DELETE")) {
      //deleteStudent and deleteNode functions called
     }
-    else if (strcmp(command,"AVERAGE") {
+    else if (strcmp(command,"AVERAGE")) {
      //averageGPA and averageHelper functions called
     }
-    else if(strcmp(command,"QUIT") {
+    else if (strcmp(command,"QUIT")) {
       cout << "Quitting the program...";
       running = false;
     }
@@ -53,6 +65,61 @@ int main () {
   }
   return 0;
 }
+//create hashtable
+int hashFunction(int ID) {
+  return ID % tableSize;
+}
+//add functions
+void addStudent(Student* s) {
+  int index = hashFunction(s->getID());
+  int count = 0;
+
+  addNode(table[index], s, count);
+
+  if (count > 3) {
+    rehash();
+  }
+}
+
+void addNode(Node* &head, Student* s, int &count) {
+  if (head == NULL) {
+    head = new Node(s);
+    count++;
+    return;
+  }
+  count++;
+  addNode(head->getNext(), s, count);
+}
+
+//print functions
+void printAll() {
+  for (int i = 0; i < tableSize; i++) {
+    printChain(table[i]);
+  }
+}
+
+void printChain(Node* head) {
+  if (head == NULL) {
+    return;
+  }
+  Student* s = head->getStudent();
+  cout << s->getFirstName() << " "
+       << s->getLastName() << ", "
+       << s->getID() << ", "
+       << fixed << setprecision(2) 
+       << s->getGPA() << endl;
+  printChain(head->getNext());
+}
+
+//delete functions
+/*
+void deleteStudent(int ID) {
+
+}
+bool deleteNode(Node* &head, int ID) {
+
+}
+*/
 //randomizer for selecting students
 Student* randomStudent() {
   ifstream firstFile("firstnames.txt");
@@ -66,9 +133,9 @@ Student* randomStudent() {
     firstFile >> first;  
     i++;
   }
-
-  i = 0;
-  while (i <= r2) {
+ 
+  int j = 0;
+  while (j <= r2) {
     lastFile >> last;    
     i++;
   }
