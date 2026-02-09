@@ -1,5 +1,7 @@
 #include <iostream> //my code is using Linked Lists p2 from last project
 #include <iomanip>
+#include <fstream>
+#include <cstdlib>
 #include <cstring>
 #include <random>
 #include "node.h"
@@ -12,7 +14,7 @@ int tableSize = OGsize;
 int nextID = 100000;
 
 //function prototypes(modify later to remove)
-int hashFunction(int ID);
+int hashFunction(int ID);                  
 void addStudent(Student* s);
 void addNode(Node* &head, Student* s, int &count);
 void printAll();
@@ -33,6 +35,8 @@ int main () {
   char command[20];
   bool running = true;
   while (running) {
+    cout << "What is your input(ADD,RANDOM,PRINT,DELETE,AVERAGE,QUIT): ";
+    cin >> command;
     if (strcmp(command,"ADD")) {
       char first[50], last[50];
       int ID;
@@ -43,6 +47,7 @@ int main () {
     }
     else if (strcmp(command,"RANDOM") == 0) {
       int n;
+      cout << "How many students would you like to add?" << endl;
       cin >> n;
       for (int i = 0; i < n; i++) {
         addStudent(randomStudent());
@@ -52,10 +57,11 @@ int main () {
       printAll();		    
     }
     else if (strcmp(command,"DELETE")) {
-     //deleteStudent and deleteNode functions called
+      int ID;
+      deleteStudent(ID);
     }
     else if (strcmp(command,"AVERAGE")) {
-     //averageGPA and averageHelper functions called
+      averageGPA();
     }
     else if (strcmp(command,"QUIT")) {
       cout << "Quitting the program...";
@@ -88,7 +94,9 @@ void addNode(Node* &head, Student* s, int &count) {
     return;
   }
   count++;
-  addNode(head->getNext(), s, count);
+  Node* next = head->getNext();
+  addNode(next, s, count);
+  head->setNext(next);
 }
 
 //print functions
@@ -112,17 +120,80 @@ void printChain(Node* head) {
 }
 
 //delete functions
-/*
 void deleteStudent(int ID) {
-
+  int index = hashFunction(ID);
+  deleteNode(table[index], ID);
 }
+
 bool deleteNode(Node* &head, int ID) {
+ if (head = NULL) {
+   return false;
+ }
 
+ if (head->getStudent()->getID() == ID) {
+    Node* temp = head;
+    head = head->getNext();
+    delete temp;
+    return true;
+  }
+
+ Node* next = head->getNext();
+ bool removed = deleteNode(next, ID);
+ head->setNext(next);
+ return removed;
 }
-*/
+
+//average functions
+void averageGPA() {
+  int count = 0;
+  float sum = 0;
+
+  for (int i = 0; i < tableSize; i++) {
+    sum += averageHelper(table[i], count);
+  }
+
+  if (count == 0) {
+    cout << "0.00" << endl;
+  } else {
+    cout << fixed << setprecision(2) << sum / count << endl;
+  }
+}
+
+float averageHelper(Node* head, int& count) {
+  if (head == NULL) {
+    return 0;
+  }
+  count++;
+  return head->getStudent()->getGPA() + averageHelper(head->getNext(), count);
+}
+
+void rehash() {
+  Node** oldTable = table;
+  int oldSize = tableSize;
+
+  tableSize *= 2;
+  table = new Node*[tableSize];
+
+  for (int i = 0; i < tableSize; i++) {
+    table[i] = NULL;
+  }
+
+  for (int i = 0; i < oldSize; i++) {
+    while (oldTable[i] != NULL) {
+      Node* temp = oldTable[i];
+      oldTable[i] = oldTable[i]->getNext();
+      addStudent(temp->getStudent());
+      delete temp;
+    }
+  }
+
+  delete[] oldTable;
+}
+
+
 //randomizer for selecting students
 Student* randomStudent() {
-  ifstream firstFile("firstnames.txt");
+  ifstream firstFile("firstnames.txt"); //use ifstream in order to read data from files, searched up command
   ifstream lastFile("lastnames.txt");
   char first[50], last[50];
   int r1 = rand() % 100;
