@@ -11,7 +11,7 @@ const int OGsize = 100;
 
 Node** table;
 int tableSize = OGsize;
-int nextID = 100000;
+int nextID = 1;
 
 //function prototypes(modify later to remove)
 int hashFunction(int ID);                  
@@ -37,11 +37,22 @@ int main () {
   while (running) {
     cout << "What is your input(ADD,RANDOM,PRINT,DELETE,AVERAGE,QUIT): ";
     cin >> command;
-    if (strcmp(command,"ADD")) {
+    if (strcmp(command,"ADD") == 0) {
       char first[50], last[50];
       int ID;
       float GPA;
-      cin >> first >> last >> ID >> GPA;
+      cout << "First name: ";
+      cin >> first;
+      cout << endl;
+      cout << "Last name: ";
+      cin >> last;
+      cout << endl;
+      cout << "ID: "; 
+      cin >> ID;
+      cout << endl;
+      cout << "GPA: "; 
+      cin >> GPA;
+      cout << endl;
       Student* s = new Student(first, last, ID, GPA);
       addStudent(s);
     }
@@ -56,14 +67,26 @@ int main () {
     else if (strcmp(command,"PRINT") == 0) {
       printAll();		    
     }
-    else if (strcmp(command,"DELETE")) {
+    else if (strcmp(command,"DELETE") == 0) {
       int ID;
+      cout << "Enter ID to delete: ";
+      cin >> ID;
       deleteStudent(ID);
     }
-    else if (strcmp(command,"AVERAGE")) {
+    else if (strcmp(command,"AVERAGE") == 0) {
+      cout << "Average: ";
       averageGPA();
     }
-    else if (strcmp(command,"QUIT")) {
+    else if (strcmp(command,"QUIT") == 0) {
+      for (int i = 0; i < tableSize; i++) {
+    	while (table[i] != NULL) {
+      	  Node* temp = table[i];
+      	  table[i] = table[i]->getNext();
+          delete temp;   
+    	}
+      }
+      delete[] table;
+      table = NULL;
       cout << "Quitting the program...";
       running = false;
     }
@@ -126,7 +149,7 @@ void deleteStudent(int ID) {
 }
 
 bool deleteNode(Node* &head, int ID) {
- if (head = NULL) {
+ if (head == NULL) {
    return false;
  }
 
@@ -195,9 +218,10 @@ void rehash() {
 Student* randomStudent() {
   ifstream firstFile("firstnames.txt"); //use ifstream in order to read data from files, searched up command
   ifstream lastFile("lastnames.txt");
-  char first[50], last[50];
-  int r1 = rand() % 100;
-  int r2 = rand() % 100;
+  char first[50];
+  char last[50];
+  int r1 = rand() % 34;
+  int r2 = rand() % 34;
   
   int i = 0;
   while (i <= r1) {
@@ -208,7 +232,7 @@ Student* randomStudent() {
   int j = 0;
   while (j <= r2) {
     lastFile >> last;    
-    i++;
+    j++;
   }
 
   float GPA = (rand() % 401) / 100.0;
