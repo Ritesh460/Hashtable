@@ -27,6 +27,7 @@ void rehash();
 Student* randomStudent();
 
 int main () {
+  //tablesize, time, command input
   srand(time(NULL));
   table = new Node*[tableSize];
   for (int i = 0; i < tableSize; i++) {
@@ -34,6 +35,7 @@ int main () {
   }
   char command[20];
   bool running = true;
+  //command options and code that come with choosing
   while (running) {
     cout << "What is your input(ADD,RANDOM,PRINT,DELETE,AVERAGE,QUIT): ";
     cin >> command;
@@ -85,12 +87,12 @@ int main () {
           delete temp;   
     	}
       }
+      //delete table before quitting
       delete[] table;
       table = NULL;
       cout << "Quitting the program...";
       running = false;
     }
-    //delete memory code over here(will do later, def after all other functions are done)
   }
   return 0;
 }
